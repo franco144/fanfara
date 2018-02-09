@@ -125,7 +125,7 @@ def blocking_init():
     to_display_and_screen('{0:.1f}'.format(remainingTime), 2, 0)
     to_display_and_screen('{:02d}/{:02d}'.format(currSession, totSessions), 2, 5)
     to_display_and_screen('{:02d}:{:02d}'.format(0, 0), 2, 11)
-    switch_siren( OFF )
+    #switch_siren( OFF )
 
     # how long does the match last ?
     matchCountdown = datetime.timedelta(seconds=totSessions * sessionTime) # in seconds
@@ -229,6 +229,8 @@ except KeyboardInterrupt:
 finally:
     print "Exited loop"
     to_display_clear("Exited!")
+
+    switch_siren( OFF )
 
     # Reset the GPIO pin to a safe state
     GPIO.cleanup()
