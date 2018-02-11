@@ -82,7 +82,7 @@ def interrupt_service_routine(Input_Sig):
 
 def reset_button_callback(channel):
     global reset, started
-    
+
     if started == False:
         return
     
@@ -90,7 +90,10 @@ def reset_button_callback(channel):
 
     if GPIO.input(channel) == 0:
         reset = True
-        GPIO.add_event_detect(channel, GPIO.FALLING, callback=reset_button_callback, bouncetime=5)
+   
+    logging.debug('reset_button_callback called. Reset is '+ str(reset))
+    # event is added when resuming. see main loop
+    #GPIO.add_event_detect(channel, GPIO.FALLING, callback=reset_button_callback, bouncetime=300)
 
 def wait_for_input():
     waiting = True
@@ -161,11 +164,11 @@ def start():
                 reset = False
                 GPIO.add_event_detect(resetButtonPin, GPIO.FALLING, callback=reset_button_callback, bouncetime=300) 
 
-            logging.debug("remainingTime"+ str(remainingTime) )
+            logging.debug("remainingTime: "+ str(remainingTime) )
             
             initiated = False
             # wait for pin to fall to zero
-            GPIO.add_event_detect(startPauseButtonPin, GPIO.FALLING, callback=start_pause_button_callback, bouncetime=300) 
+            GPIO.add_event_detect(startPauseButtonPin, GPIO.FALLING, callback=start_pause_button_callback, bouncetime=600) 
             
             while remainingTime > 0.1:
                 if reset == True:

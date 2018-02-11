@@ -40,7 +40,7 @@ try:
         fanfara.to_display_clear( msg )
         sleep(1)
 
-    fanfara.to_display_clear("Press yellow")
+    fanfara.to_display_clear("Press green")
 
     # main loop
     while True:
