@@ -7,4 +7,4 @@ from repo: https://github.com/emcniece/rpi-lcd.git
 Thanks to emcniece
 
 - Make sure pin for buttons correspond to `fanfara-pinout.png` image. If buttons are attached to different pin than what the image says, don't forget to update the code with the new pins
-- run `python fanfara.py`
+- run `python main.py`
