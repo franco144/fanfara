@@ -68,18 +68,6 @@ def start_pause_button_callback(channel):
     print "---detected---"
     detected = True
 
-def interrupt_service_routine(Input_Sig):
-    global detected
-    # turn detection off
-    GPIO.remove_event_detect(Input_Sig)
-            
-    if GPIO.input(Input_Sig) == 0: # only falling levels
-        print "FALLING"
-        detected = True
-        # turn detection back on
-        GPIO.add_event_detect(Input_Sig, GPIO.FALLING, callback=interrupt_service_routine, bouncetime=5)
-        return
-
 def reset_button_callback(channel):
     global reset, started
 
@@ -168,7 +156,7 @@ def start():
             
             initiated = False
             # wait for pin to fall to zero
-            GPIO.add_event_detect(startPauseButtonPin, GPIO.FALLING, callback=start_pause_button_callback, bouncetime=600) 
+            GPIO.add_event_detect(startPauseButtonPin, GPIO.FALLING, callback=start_pause_button_callback, bouncetime=1000) 
             
             while remainingTime > 0.1:
                 if reset == True:
