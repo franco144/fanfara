@@ -199,6 +199,8 @@ def start():
 
                     detected = False
 
+            GPIO.remove_event_detect(startPauseButtonPin)
+
             partial = divmod((datetime.datetime.now() - script_start).total_seconds(), 60)
             logging.debug("<== session duration {:02.0f}:{:02.3f}".format(partial[0], partial[1]))
 
