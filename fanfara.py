@@ -51,22 +51,26 @@ def switch_siren(mode):
     #print "switching "+ str(mode)
     GPIO.output(pinSiren, mode)
 
+
 def fire_siren(fireDuration):
     switch_siren(ON)
     sleep(fireDuration)
     switch_siren(OFF)
     sleep(.300)
 
+
 def fire_end_game():
     fire_siren(1.5)
     fire_siren(1.5)
     fire_siren(2)
 
+
 def start_pause_button_callback(channel):
     global detected
-    #sleep(0.005) #edge de-bounce of 5ms
+    # sleep(0.005) #edge de-bounce of 5ms
     print "---detected---"
     detected = True
+
 
 def reset_button_callback(channel):
     global reset, started
@@ -81,24 +85,27 @@ def reset_button_callback(channel):
    
     logging.debug('reset_button_callback called. Reset is '+ str(reset))
     # event is added when resuming. see main loop
-    #GPIO.add_event_detect(channel, GPIO.FALLING, callback=reset_button_callback, bouncetime=300)
+    # GPIO.add_event_detect(channel, GPIO.FALLING, callback=reset_button_callback, bouncetime=300)
 
 def wait_for_input():
     waiting = True
-    #print "waiting for input"
-    while waiting == True:
+    # print "waiting for input"
+    while waiting:
         sleep(0.1)
-        if False == GPIO.input(startPauseButtonPin):
+        if not GPIO.input(startPauseButtonPin):
             waiting = False
+
 
 def to_display_clear(message="-_-", row=1, col=0):
     display.lcd_display_string_pos("                ", row, col )
     display.lcd_display_string_pos(message, row, col);
     logging.info( message )
 
+
 def to_display_and_screen(message, row=1, col=0):
     display.lcd_display_string_pos(message, row, col)
     logging.info( message )
+
 
 # variable initiation
 gameFinished = detected = False
@@ -106,8 +113,9 @@ remainingTime = currSession = matchCountdown = 0
 reset = True
 started = False
 
+
 def blocking_init():
-    global gameFinished, remainingTime, currSession, totSessions, matchCountdown, sessionTime, scriptstart
+    global gameFinished, remainingTime, currSession, totSessions, matchCountdown, sessionTime, script_start
 
     # in seconds
     remainingTime = sessionTime
@@ -119,18 +127,19 @@ def blocking_init():
     to_display_and_screen('{0:.1f}'.format(remainingTime), 2, 0)
     to_display_and_screen('{:02d}/{:02d}'.format(currSession, totSessions), 2, 5)
     to_display_and_screen('{:02d}:{:02d}'.format(0, 0), 2, 11)
-    #switch_siren( OFF )
+    # switch_siren( OFF )
 
     # how long does the match last ?
     matchCountdown = datetime.timedelta(seconds=totSessions * sessionTime) # in seconds
-    matchCountdownTuple = divmod(matchCountdown.total_seconds(), 60)
-    to_display_and_screen("{:02.0f}:{:02.0f}".format(matchCountdownTuple[0], floor(matchCountdownTuple[1])), 2, 11)
+    match_countdown_tuple = divmod(matchCountdown.total_seconds(), 60)
+    to_display_and_screen("{:02.0f}:{:02.0f}".format(match_countdown_tuple[0], floor(match_countdown_tuple[1])), 2, 11)
 
     wait_for_input()
 
     # debug
-    scriptstart = datetime.datetime.now()
-    logging.debug( "==> started at "+ str(scriptstart) )
+    script_start = datetime.datetime.now()
+    logging.debug("==> started at " + str(script_start))
+
 
 #
 # Main loop
@@ -181,8 +190,8 @@ def start():
                     # update display with total time
                     to_display_and_screen(totalTimeFormatted, 2, 11) # time
 
-                if detected == True:
-                    if started == True:
+                if detected:
+                    if started:
                         to_display_clear("Paused...")
                         print "\n"
                         started = False
@@ -195,7 +204,7 @@ def start():
             detected = False # in case it was pressed right at the end
 
             partial = divmod((datetime.datetime.now() - scriptstart).total_seconds(), 60)
-            logging.debug( "<== session duration {:02.0f}:{:02.3f}".format(partial[0], partial[1]) )
+            logging.debug("<== session duration {:02.0f}:{:02.3f}".format(partial[0], partial[1]))
             
             GPIO.remove_event_detect(startPauseButtonPin)
             # avoid to issue a reset between sessions
@@ -206,7 +215,7 @@ def start():
                 to_display_clear("End of the match")
                 gameFinished = True
                 fire_end_game()
-            elif reset == False:
+            elif not reset:
                 t = threading.Thread(target=fire_siren, args=(sirenDurationEndSession,))
                 t.start()
                 to_display_clear("End of session!")
@@ -216,7 +225,7 @@ def start():
 
                 to_display_and_screen("Start session "+ str(currSession))
                 to_display_and_screen('{0:.1f}'.format(remainingTime), 2, 0)
-                to_display_and_screen("{:02d}/{:02d}".format(currSession,totSessions), 2, 5) # 02/24
+                to_display_and_screen("{:02d}/{:02d}".format(currSession, totSessions), 2, 5) # 02/24
                 wait_for_input()
 
     except KeyboardInterrupt:
