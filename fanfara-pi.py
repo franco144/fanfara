@@ -1,4 +1,10 @@
 #!/usr/bin/python
+"""
+This is the version of this script as it was when raspberry was delivered.
+Can be taken as starting point or backup if new versions get broken.
+To be deleted when new version are tested and working good.
+"""
+
 
 import threading
 import logging
@@ -23,11 +29,11 @@ display = RPi_I2C_driver.lcd()
 GPIO.setmode(GPIO.BCM)
 
 # button setup
-startPauseButtonPin = 24
-resetButtonPin = 7
+START_PAUSE_BTN_PIN = 24
+RESET_BTN_PIN = 7
 
-GPIO.setup(startPauseButtonPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(resetButtonPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(START_PAUSE_BTN_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(RESET_BTN_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 # rele setup
 pinSiren = 4
@@ -36,16 +42,16 @@ GPIO.setup(pinSiren, GPIO.OUT)
 GPIO.output(pinSiren, GPIO.HIGH)
 
 # session details
-totSessions = 24
+NO_SESSIONS = 24
 # one session duration in seconds
-sessionTime = 60
+SESSION_TIME = 60
 
 # rele commands
 ON = GPIO.LOW
 OFF = GPIO.HIGH
 
 # siren duration
-sirenDurationEndSession = 1.5
+END_SESSION_SIREN_DURATION = 1.5
 
 
 def switch_siren(mode):
@@ -67,14 +73,14 @@ def fire_end_game():
 
 
 def start_pause_button_callback(channel):
-    global detected
+    global is_start_pause_btn_pressed
     # sleep(0.005) #edge de-bounce of 5ms
     print "---detected---"
     detected = True
 
 
 def reset_button_callback(channel):
-    global reset, started
+    global is_reset_btn_pressed, is_session_running
 
     if started == False:
         return
@@ -94,7 +100,7 @@ def wait_for_input():
     # print "waiting for input"
     while waiting == True:
         sleep(0.1)
-        if False == GPIO.input(startPauseButtonPin):
+        if False == GPIO.input(START_PAUSE_BTN_PIN):
             waiting = False
 
 
@@ -110,14 +116,14 @@ def to_display_and_screen(message, row=1, col=0):
 
 
 # variable initiation
-gameFinished = detected = False
-remainingTime = currSession = matchCountdown = 0
-reset = True
-started = False
+is_game_finished = is_start_pause_btn_pressed = False
+remaining_time_session = no_curr_session = remaining_time_game = 0
+is_reset_btn_pressed = True
+is_session_running = False
 
 
 def blocking_init():
-    global gameFinished, remainingTime, currSession, totSessions, matchCountdown, sessionTime, scriptstart
+    global is_game_finished, remaining_time_session, no_curr_session, NO_SESSIONS, remaining_time_game, SESSION_TIME, scriptstart
 
     # in seconds
     remainingTime = sessionTime
@@ -147,7 +153,7 @@ def blocking_init():
 # Main loop
 #
 def start():
-    global started, reset, gameFinished, remainingTime, currSession, totSessions, matchCountdown, detected, sessionTime, startPauseButtonPin, resetButtonPin, sirenDurationEndSession
+    global is_session_running, is_reset_btn_pressed, is_game_finished, remaining_time_session, no_curr_session, NO_SESSIONS, remaining_time_game, is_start_pause_btn_pressed, SESSION_TIME, START_PAUSE_BTN_PIN, RESET_BTN_PIN, END_SESSION_SIREN_DURATION
 
     try:
         started = False
