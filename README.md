@@ -1,5 +1,8 @@
 # fanfara
 
+Raspberry pi project to be used during an ice hockey game to show game information and also signal sessions and end of the game by firing a horn.
+The raspberry pi is connected to a two line LCD display which shows information, two push buttons to reset and start/pause sessions and a relay which the horn is connected to.
+
 File needed:
 file RPi_I2C_driver.py is used to interact with LCD display.
 
