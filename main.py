@@ -45,7 +45,7 @@ try:
 
     # main loop
     while True:
-        if not fanfara.GPIO.input(fanfara.start_pause_button_pin):
+        if not fanfara.GPIO.input(fanfara.START_PAUSE_BTN_PIN):
             button_pressed()
             break
         sleep(0.2)
