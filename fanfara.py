@@ -45,7 +45,7 @@ RELE_ON = GPIO.LOW
 RELE_OFF = GPIO.HIGH
 
 # siren duration
-END_SESSION_SIREN_DURATION = 1.5
+END_SESSION_SIREN_DURATION = 1.1
 
 
 def switch_siren(mode):
@@ -60,9 +60,9 @@ def fire_siren(fire_duration):
 
 
 def fire_siren_end_game():
-    fire_siren(1.8)
-    fire_siren(1.8)
-    fire_siren(2.5)
+    fire_siren(0.7)
+    fire_siren(0.7)
+    fire_siren(1.5)
 
 
 def start_pause_button_callback(channel):
@@ -128,16 +128,24 @@ def blocking_init_game():
     It resets the status so that a new game can start and waits for user to press 'start' button
     """
     global is_game_finished, remaining_time_session, no_curr_session, remaining_time_game, script_start_time, \
-        is_session_new
+        is_session_new, is_session_running
 
     logging.info("Initiating new game")
+
+    is_game_finished = False
+    is_session_running = False
+    is_session_new = True
+    no_curr_session = 0
+    remaining_time_session = 0
+    remaining_time_game = 0
+
     # in seconds
     remaining_time_session = SESSION_TIME
-
     no_curr_session = 1
     is_game_finished = False
     is_session_new = True  # True if there has been no loop for this session yet
 
+    display.lcd_clear()
     to_display_and_screen("Ready to start..")
     to_display_and_screen('{0:.1f}'.format(remaining_time_session), 2, 0)
     to_display_and_screen('{:02d}/{:02d}'.format(no_curr_session, NO_GAME_SESSIONS), 2, 5)
@@ -184,10 +192,11 @@ def start():
         no_curr_session, remaining_time_game, is_start_pause_btn_pressed, is_session_new
 
     try:
-        is_session_running = False
-
         # initialize new game
         blocking_init_game()
+        # make sure the btn flags are initiated correctly after the callbacks are setup
+        is_start_pause_btn_pressed = False
+        is_reset_btn_pressed = False
 
         while not is_game_finished:
             logging.info("[==> session remaining time : {}".format(str(remaining_time_session)))
@@ -270,6 +279,6 @@ def start():
         switch_siren(RELE_OFF)
 
         # Reset the GPIO pin to a safe state
-        GPIO.cleanup()
-        display.lcd_clear()
+        # GPIO.cleanup()
+        # display.lcd_clear()
 
