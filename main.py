@@ -31,7 +31,7 @@ except IOError:
 
 def button_pressed():
     logging.info('Green button pressed')
-    sleep(0.8)
+    sleep(0.5)
     fanfara.start()
 
 
@@ -47,7 +47,7 @@ try:
     while True:
         if not fanfara.GPIO.input(fanfara.START_PAUSE_BTN_PIN):
             button_pressed()
-            break
+            # break
         sleep(0.2)
 
 finally:
